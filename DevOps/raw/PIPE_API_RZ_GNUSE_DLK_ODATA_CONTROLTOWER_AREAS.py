@@ -51,3 +51,4 @@ df.write.mode('overwrite').format('json').save(sinkPath)
 
 # COMMAND ----------
 
+#Fim carga Raw Area
