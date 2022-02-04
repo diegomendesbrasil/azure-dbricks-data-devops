@@ -105,7 +105,11 @@ def getDadosDiarioAuroraAPI(source, data_corte):
   dfOdata = pd.DataFrame([])
   
   BASE_URL = 'https://analytics.dev.azure.com/ab-inbev/Aurora_Program/_odata/v3.0/'
-  COLUNA_LOOKUP = 'ChangedDate'
+  
+  if source == 'WorkItems':
+    COLUNA_LOOKUP = 'ChangedDate'
+  else:
+    COLUNA_LOOKUP = 'AnalyticsUpdatedDate'
 
   EXECUCAO = 0
   EXECUCAOFOR = 0
@@ -159,3 +163,7 @@ def getDadosDiarioAuroraAPI(source, data_corte):
       print('EXCEPTION - {}'.format(e))
       break
   return dfOdata
+
+# COMMAND ----------
+
+

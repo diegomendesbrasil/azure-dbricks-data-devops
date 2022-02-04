@@ -748,7 +748,7 @@ df_merge = df_full.union(df_diario)
 # Criando uma coluna de nome rank, ranqueando os WorkItemId pela maior data em ChangedDateSK, ou seja, o mesmo WorkItemId terá o rank maior para aquele com a data de atualização mais recente
 
 df_merge = df_merge.withColumn(
-  'rank', dense_rank().over(Window.partitionBy('WorkItemId').orderBy(desc('ChangedDateSK')))
+  'rank', dense_rank().over(Window.partitionBy('WorkItemId').orderBy(desc('ChangedDateSK'), desc('DataCarregamento')))
 )
 
 # COMMAND ----------
@@ -770,9 +770,53 @@ print(f'Originalmente havia {num_linhas_full} linhas na tabela full e {num_linha
 
 # COMMAND ----------
 
+df_filtrado = df_merge.filter(df_merge.WorkItemId == 1473392)
+display(df_filtrado)
+
+# COMMAND ----------
+
+df_filtrado = df.filter(df.WorkItemId == 1473392)
+display(df_filtrado)
+
+# COMMAND ----------
+
+df_duplicatas = df \
+    .groupby('WorkItemId') \
+    .count() \
+    .where('count > 1') \
+    .sort('count', ascending=False)
+
+display(df_duplicatas)
+
+# COMMAND ----------
+
+print('QTD LINHAS ANTES DO DISTINCT: ', df.count())
+df = df.distinct()
+print('QTD LINHAS DEPOIS DO DISTINCT: ', df.count())
+
+# COMMAND ----------
+
+df_filtrado = df.filter(df.WorkItemId == 1473392)
+display(df_filtrado)
+
+# COMMAND ----------
+
+df_duplicatas = df \
+    .groupby('WorkItemId') \
+    .count() \
+    .where('count > 1') \
+    .sort('count', ascending=False)
+
+display(df_duplicatas)
+
+# COMMAND ----------
+
 # Salva a tabela de volta em modo parquet no caminho especificado
 
 sinkPath = aurora_standardized_folder + sourceFile + '/' + max_data
+print(sinkPath)
+
+# COMMAND ----------
 
 df.write.mode('overwrite').format('parquet').save(sinkPath)
 
@@ -785,15 +829,3 @@ print(f'Tempo de execução do notebook: {duracao_notebook}')
 # COMMAND ----------
 
 # Fim carga Stand WorkItems Diario
-
-# COMMAND ----------
-
-print("Número de linhas atual: ", df.count())
-
-DfFinal = df.distinct()
-
-print("Número de linhas após distinct: ", df.count())
-
-# COMMAND ----------
-
-
