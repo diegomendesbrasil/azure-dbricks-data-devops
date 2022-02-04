@@ -770,44 +770,9 @@ print(f'Originalmente havia {num_linhas_full} linhas na tabela full e {num_linha
 
 # COMMAND ----------
 
-df_filtrado = df_merge.filter(df_merge.WorkItemId == 1473392)
-display(df_filtrado)
-
-# COMMAND ----------
-
-df_filtrado = df.filter(df.WorkItemId == 1473392)
-display(df_filtrado)
-
-# COMMAND ----------
-
-df_duplicatas = df \
-    .groupby('WorkItemId') \
-    .count() \
-    .where('count > 1') \
-    .sort('count', ascending=False)
-
-display(df_duplicatas)
-
-# COMMAND ----------
-
 print('QTD LINHAS ANTES DO DISTINCT: ', df.count())
 df = df.distinct()
 print('QTD LINHAS DEPOIS DO DISTINCT: ', df.count())
-
-# COMMAND ----------
-
-df_filtrado = df.filter(df.WorkItemId == 1473392)
-display(df_filtrado)
-
-# COMMAND ----------
-
-df_duplicatas = df \
-    .groupby('WorkItemId') \
-    .count() \
-    .where('count > 1') \
-    .sort('count', ascending=False)
-
-display(df_duplicatas)
 
 # COMMAND ----------
 
