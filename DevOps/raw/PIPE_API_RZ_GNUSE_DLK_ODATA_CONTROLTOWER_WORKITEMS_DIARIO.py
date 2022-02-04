@@ -18,10 +18,11 @@ from re import findall
 import pandas as pd
 from pyspark.sql.types import StringType
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # Hora de início do processamento do notebook
 start_time = datetime.now()
+
 
 # COMMAND ----------
 
@@ -37,13 +38,28 @@ start_time = datetime.now()
 
 # Assunto a ser buscado na API
 
-sourceFile = 'WorkItemLinks'
+sourceFile = 'WorkItems'
 
 # COMMAND ----------
 
-# Busca os dados na API e retorna um pandas dataframe. Ao final do processamento é exibido quantas linhas o dataframe possui
+# Cria string contendo a data de hoje e a usa como filtro na coluna ChangedDate
 
-dfOdata = getDadosAuroraAPI(sourceFile)
+#hoje = datetime.now().strftime("%Y-%m-%d") EXEMPLO DE COMO PEGAR O 'HOJE'
+reprocessamento = '2018-01-01'
+ontem = (datetime.now() - timedelta(1)).strftime("%Y-%m-%d") 
+
+if reprocessamento != '':
+  data_corte = reprocessamento
+else:
+  data_corte = ontem
+
+print(f'A data a ser utilizada no filtro é: {data_corte}')
+
+# COMMAND ----------
+
+# Busca os dados na API filtrando o ChangedDate por data_corte e retorna um pandas dataframe. Ao final do processamento é exibido quantas linhas o dataframe possui
+
+dfOdata = getDadosDiarioAuroraAPI(sourceFile, data_corte)
 
 # COMMAND ----------
 
@@ -78,4 +94,4 @@ print(f'Tempo de execução do notebook: {duracao_notebook}')
 
 # COMMAND ----------
 
-# Fim carga Raw WorkItemLinks
+# Fim carga Raw WorkItems Diario
