@@ -72,7 +72,7 @@ dfOdata['DataCarregamento'] = horaAtual
 
 # Cria o path onde será salvo o arquivo. Padrão: zona do datalake /assunto do notebook / yyyy-mm-dd_hh_mm_ss
 
-sinkPath = aurora_raw_folder + sourceFile + '/' + horaAtual
+sinkPath = aurora_raw_folder + sourceFile + '_diario/' + horaAtual
 
 # COMMAND ----------
 
