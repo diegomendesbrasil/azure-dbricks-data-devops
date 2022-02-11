@@ -10,7 +10,7 @@ from pyspark.sql.functions import regexp_replace, date_format
 from pyspark import SparkContext, SparkConf
 from pyspark.sql import SQLContext
 from pyspark.sql.types import *
-from pyspark.sql.functions import from_json, col, when
+from pyspark.sql.functions import from_json, col
 from pyspark.sql.functions import initcap, lit
 from pandas import DataFrame
 from re import findall
@@ -18,10 +18,11 @@ from re import findall
 import pandas as pd
 from pyspark.sql.types import StringType
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # Hora de início do processamento do notebook
 start_time = datetime.now()
+
 
 # COMMAND ----------
 
@@ -37,19 +38,34 @@ start_time = datetime.now()
 
 # Assunto a ser buscado na API
 
-sourceFile = 'Areas'
+sourceFile = 'WorkItemRevisions'
+
+# COMMAND ----------
+
+# Cria string contendo a data de hoje e a usa como filtro na coluna ChangedDate
+
+#hoje = datetime.now().strftime("%Y-%m-%d") EXEMPLO DE COMO PEGAR O 'HOJE'
+reprocessamento = ''
+ontem = (datetime.now() - timedelta(1)).strftime("%Y-%m-%d") 
+
+if reprocessamento != '':
+  data_corte = reprocessamento
+else:
+  data_corte = ontem
+
+print(f'A data a ser utilizada no filtro é: {data_corte}')
 
 # COMMAND ----------
 
 # Busca os dados na API e retorna um pandas dataframe. Ao final do processamento é exibido quantas linhas o dataframe possui
 
-dfOdata = getDadosAuroraAPI(sourceFile)
+dfOdata = getDadosDiarioAuroraAPI(sourceFile, data_corte)
 
 # COMMAND ----------
 
 # Captura a data/hora atual e insere como nova coluna no dataframe
 
-horaAtual = (datetime.now() - pd.DateOffset(hours=3)).strftime("%Y-%m-%d_%H_%M_%S")     # PADRÃO CONSIDERADO PARA O DATALAKE
+horaAtual = (datetime.now() - pd.DateOffset(hours=3)).strftime("%Y-%m-%d_%H_%M_%S")
 dfOdata['DataCarregamento'] = horaAtual
 
 # COMMAND ----------
@@ -78,4 +94,8 @@ print(f'Tempo de execução do notebook: {duracao_notebook}')
 
 # COMMAND ----------
 
-# Fim carga Raw Area
+# Fim carga Raw WorkItemRevisions
+
+# COMMAND ----------
+
+

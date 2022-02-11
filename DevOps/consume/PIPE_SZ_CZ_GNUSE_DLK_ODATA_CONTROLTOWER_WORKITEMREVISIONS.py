@@ -1,5 +1,5 @@
 # Databricks notebook source
-# Importanto bibliotecas
+# Importando bibliotecas
 
 from pyspark.sql.functions import *
 from pyspark.sql.types import *
@@ -19,7 +19,7 @@ from datetime import datetime
 
 # Assunto a ser buscado no Datalake e criação do path a ser utilizado para ler os arquivos
 
-sourceFile = 'Areas'
+sourceFile = 'WorkItemRevisions'
 sourcePath = aurora_standardized_folder + sourceFile + '/'
 
 # COMMAND ----------
@@ -49,6 +49,12 @@ df = spark.read.parquet(sourcePath)
 
 # COMMAND ----------
 
+df.printSchema()
+
+# formatar os campos
+
+# COMMAND ----------
+
 # Salva a tabela em modo parquet no caminho especificado
 
 df.write.mode('overwrite').format('parquet').save(sinkPath)
@@ -57,21 +63,21 @@ df.write.mode('overwrite').format('parquet').save(sinkPath)
 
 # Lê o arquivo em um novo Dataframe
 
-DimAreasTemp = spark.read.parquet(sinkPath)
+LOGWorkItemAurora = spark.read.parquet(sinkPath)
 
 # COMMAND ----------
 
 # Escreve o Dataframe no banco de dados
 
-DimAreasTemp.write\
+LOGWorkItemAurora.write\
     .format("jdbc")\
     .mode("overwrite")\
     .option("url", url)\
-    .option("dbtable", "dbo.DimAreasTemp")\
+    .option("dbtable", "dbo.LOGWorkItemAurora")\
     .option("user", user)\
     .option("password", password)\
     .save()
 
 # COMMAND ----------
 
-# Fim carga Consume Areas
+# Fim carga Consume WorkItemRevisions

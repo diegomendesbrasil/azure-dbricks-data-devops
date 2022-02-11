@@ -106,7 +106,7 @@ def getDadosDiarioAuroraAPI(source, data_corte):
   
   BASE_URL = 'https://analytics.dev.azure.com/ab-inbev/Aurora_Program/_odata/v3.0/'
   
-  if source == 'WorkItems':
+  if source == 'WorkItems' or source == 'WorkItemRevisions':
     COLUNA_LOOKUP = 'ChangedDate'
   else:
     COLUNA_LOOKUP = 'AnalyticsUpdatedDate'
@@ -163,6 +163,38 @@ def getDadosDiarioAuroraAPI(source, data_corte):
       print('EXCEPTION - {}'.format(e))
       break
   return dfOdata
+
+# COMMAND ----------
+
+def UpdateDataLoad(hora_atualizacao, subject_area, table_name, zone_name):
+  
+  df_ControlDatasetLoad = (spark
+  .read
+  .format("jdbc")
+  .option("url", url)
+  .option("dbtable", 'dbo.ControlDatasetLoad_Temp')
+  .option("user", user)
+  .option("password", password)
+  .load()
+)
+  
+  df_DataAtualizada = df_ControlDatasetLoad.withColumn('LastDataLoad', 
+                                            when((col('SubjectArea') == subject_area) & 
+                                                 (col('TableName') == table_name) & 
+                                                 (col('Zone') == zone_name) & 
+                                                 (col('DataSource') == 'DevOps'), hora_atualizacao).otherwise(df_ControlDatasetLoad.LastDataLoad))
+  
+  df_DataAtualizada.write.mode('overwrite') \
+  .format("jdbc") \
+  .option("url", url) \
+  .option("dbtable", 'dbo.ControlDatasetLoad_Temp') \
+  .option("user", user) \
+  .option("password", password) \
+  .save()
+  
+  print(f'Data de atualização de {zone_name}/{subject_area}/{table_name} na tabela ControlDatasetLoad foi alterada para {hora_atualizacao}')
+  
+  return
 
 # COMMAND ----------
 

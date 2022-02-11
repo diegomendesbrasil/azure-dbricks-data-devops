@@ -198,3 +198,23 @@ print('QTD LINHAS DEPOIS DO DISTINCT: ', df.count())
 
 sinkPath = aurora_standardized_folder + sourceFile + '/' + max_data
 print(sinkPath)
+
+# COMMAND ----------
+
+# Salva a tabela em modo parquet no caminho especificado
+
+df.write.mode('overwrite').format('parquet').save(sinkPath)
+
+# COMMAND ----------
+
+end_time = datetime.now()
+duracao_notebook = str((end_time - start_time)).split('.')[0]
+print(f'Tempo de execução do notebook: {duracao_notebook}')
+
+# COMMAND ----------
+
+# Fim carga Stand WorkItemLinks Diario
+
+# COMMAND ----------
+
+

@@ -1,7 +1,14 @@
 # Databricks notebook source
+# Importanto bibliotecas
+
 from pyspark.sql.functions import *
 from pyspark.sql.types import *
 from datetime import datetime
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ##### Notebook de configurações e funções
 
 # COMMAND ----------
 
@@ -10,10 +17,14 @@ from datetime import datetime
 
 # COMMAND ----------
 
+# Assunto a ser buscado no Datalake e criação do path a ser utilizado para ler os arquivos
+
 sourceFile = 'Iterations'
 sourcePath = aurora_standardized_folder + sourceFile + '/'
 
 # COMMAND ----------
+
+# Loop em todas as pastas do assunto no Datalake para identificar aquela que contem os registros mais recentes
 
 max_data = ''
 for i in dbutils.fs.ls(sourcePath):
@@ -25,15 +36,42 @@ print(sourcePath)
 
 # COMMAND ----------
 
+# Cria o path onde será salvo o arquivo. Padrão: zona do datalake / assunto do notebook
+
 sinkPath = aurora_consume_folder + sourceFile
+print(sinkPath)
 
 # COMMAND ----------
+
+# Lê o arquivo avro do path e salva em um spark dataframe
 
 df = spark.read.parquet(sourcePath)
 
 # COMMAND ----------
 
+# Salva a tabela em modo parquet no caminho especificado
+
 df.write.mode('overwrite').format('parquet').save(sinkPath)
 
 # COMMAND ----------
 
+# Lê o arquivo em um novo Dataframe
+
+DimIterationSprintTemp = spark.read.parquet(sinkPath)
+
+# COMMAND ----------
+
+# Escreve o Dataframe no banco de dados
+
+DimIterationSprintTemp.write\
+    .format("jdbc")\
+    .mode("overwrite")\
+    .option("url", url)\
+    .option("dbtable", "dbo.DimIterationSprintTemp")\
+    .option("user", user)\
+    .option("password", password)\
+    .save()
+
+# COMMAND ----------
+
+# Fim carga Consume Iterations
