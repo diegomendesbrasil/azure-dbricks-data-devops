@@ -4,6 +4,10 @@
 from pyspark.sql.functions import *
 from pyspark.sql.types import *
 from datetime import datetime
+import pandas as pd
+
+# Hora de início do processamento do notebook
+start_time = datetime.now()
 
 # COMMAND ----------
 
@@ -71,6 +75,39 @@ DimUserTemp.write\
     .option("user", user)\
     .option("password", password)\
     .save()
+
+# COMMAND ----------
+
+script = """
+MERGE [dbo].[DimUser] AS DIM  
+USING  (SELECT UserSK, UserName, UserEmail  
+  FROM DimUserTemp   
+  WHERE UserName IS NOT NULL   
+  GROUP BY UserSK, UserName, UserEmail) AS SOURCE  
+ ON (SOURCE.UserSK = DIM.UserSK)  
+WHEN MATCHED AND DIM.UserName <> SOURCE.UserName or DIM.UserEmail <> SOURCE.UserEmail  
+ THEN UPDATE SET DIM.UserName = SOURCE.UserName, DIM.UserEmail = SOURCE.UserEmail   
+WHEN NOT MATCHED   
+ THEN INSERT (UserSK, UserName, UserEmail)   
+ VALUES (SOURCE.UserSK,SOURCE.UserName,SOURCE.UserEmail);
+"""
+
+# COMMAND ----------
+
+driver_manager = spark._sc._gateway.jvm.java.sql.DriverManager
+connection = driver_manager.getConnection(url, user, password)
+connection.prepareCall(script).execute()
+connection.close()
+
+# COMMAND ----------
+
+end_time = datetime.now()
+duracao_notebook = str((end_time - start_time)).split('.')[0]
+print(f'Tempo de execução do notebook: {duracao_notebook}')
+
+# COMMAND ----------
+
+update_log(sourceFile, 'STANDARDIZED', 'CONSUME', duracao_notebook, df.count(), 3)
 
 # COMMAND ----------
 

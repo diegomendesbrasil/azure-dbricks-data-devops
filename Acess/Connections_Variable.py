@@ -198,4 +198,36 @@ def UpdateDataLoad(hora_atualizacao, subject_area, table_name, zone_name):
 
 # COMMAND ----------
 
+def update_log(assunto, origem, destino, tempo, qtd_linhas, ordem):
+  
+  colunas = ['Assunto', 'Origem', 'Destino', 'Tempo', 'Linhas', 'Ordem', 'DataCarregamento']
+  linhas = [(assunto, origem, destino, tempo, qtd_linhas, ordem, (datetime.now() - pd.DateOffset(hours=3)).replace(microsecond=0).isoformat())]
+  
+  df_schema = StructType([       
+    StructField('Assunto', StringType(), True),
+    StructField('Origem', StringType(), True),
+    StructField('Destino', StringType(), True),
+    StructField('Tempo', StringType(), True),
+    StructField('Linhas', IntegerType(), True),
+    StructField('Ordem', IntegerType(), True),
+    StructField('DataCarregamento', StringType(), True)
+  ])
+  
+  
+  df = spark.createDataFrame(linhas, df_schema)
+  
+  df.write.mode('append') \
+  .format("jdbc") \
+  .option("url", url) \
+  .option("dbtable", 'dbo.UpdateLog') \
+  .option("user", user) \
+  .option("password", password) \
+  .save()
+  
+  print(f'{qtd_linhas} linhas do assunto {assunto} foram gravadas na {destino} zone')
+  
+  return
+
+# COMMAND ----------
+
 

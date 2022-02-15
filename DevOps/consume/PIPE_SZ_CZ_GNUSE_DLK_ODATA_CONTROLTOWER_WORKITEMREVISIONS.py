@@ -1,9 +1,13 @@
 # Databricks notebook source
-# Importando bibliotecas
+# Importanto bibliotecas
 
 from pyspark.sql.functions import *
 from pyspark.sql.types import *
 from datetime import datetime
+import pandas as pd
+
+# Hora de início do processamento do notebook
+start_time = datetime.now()
 
 # COMMAND ----------
 
@@ -49,12 +53,6 @@ df = spark.read.parquet(sourcePath)
 
 # COMMAND ----------
 
-df.printSchema()
-
-# formatar os campos
-
-# COMMAND ----------
-
 # Salva a tabela em modo parquet no caminho especificado
 
 df.write.mode('overwrite').format('parquet').save(sinkPath)
@@ -77,6 +75,16 @@ LOGWorkItemAurora.write\
     .option("user", user)\
     .option("password", password)\
     .save()
+
+# COMMAND ----------
+
+end_time = datetime.now()
+duracao_notebook = str((end_time - start_time)).split('.')[0]
+print(f'Tempo de execução do notebook: {duracao_notebook}')
+
+# COMMAND ----------
+
+update_log(sourceFile, 'STANDARDIZED', 'CONSUME', duracao_notebook, df.count(), 3)
 
 # COMMAND ----------
 

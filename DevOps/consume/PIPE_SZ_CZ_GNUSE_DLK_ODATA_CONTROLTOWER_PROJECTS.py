@@ -4,6 +4,10 @@
 from pyspark.sql.functions import *
 from pyspark.sql.types import *
 from datetime import datetime
+import pandas as pd
+
+# Hora de início do processamento do notebook
+start_time = datetime.now()
 
 # COMMAND ----------
 
@@ -72,6 +76,36 @@ DimProjectTemp.write\
     .option("user", user)\
     .option("password", password)\
     .save()
+
+# COMMAND ----------
+
+script = """
+MERGE [dbo].[DimProject] AS DIM  
+USING  (SELECT ProjectSK, ProjectName FROM DimProjectTemp WHERE ProjectName IS NOT NULL GROUP BY ProjectName, ProjectSK) AS SOURCE  
+ ON (SOURCE.ProjectSK = DIM.ProjectSK)  
+WHEN MATCHED AND DIM.ProjectName <> SOURCE.ProjectName  
+ THEN UPDATE SET DIM.ProjectName = SOURCE.ProjectName   
+WHEN NOT MATCHED   
+ THEN INSERT (ProjectSK, ProjectName)   
+ VALUES (SOURCE.ProjectSK,SOURCE.ProjectName);
+"""
+
+# COMMAND ----------
+
+driver_manager = spark._sc._gateway.jvm.java.sql.DriverManager
+connection = driver_manager.getConnection(url, user, password)
+connection.prepareCall(script).execute()
+connection.close()
+
+# COMMAND ----------
+
+end_time = datetime.now()
+duracao_notebook = str((end_time - start_time)).split('.')[0]
+print(f'Tempo de execução do notebook: {duracao_notebook}')
+
+# COMMAND ----------
+
+update_log(sourceFile, 'STANDARDIZED', 'CONSUME', duracao_notebook, df.count(), 3)
 
 # COMMAND ----------
 

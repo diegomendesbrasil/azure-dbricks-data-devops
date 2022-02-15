@@ -4,6 +4,10 @@
 from pyspark.sql.functions import *
 from pyspark.sql.types import *
 from datetime import datetime
+import pandas as pd
+
+# Hora de início do processamento do notebook
+start_time = datetime.now()
 
 # COMMAND ----------
 
@@ -71,6 +75,59 @@ DimIterationSprintTemp.write\
     .option("user", user)\
     .option("password", password)\
     .save()
+
+# COMMAND ----------
+
+script = """
+MERGE DimIterationSprint AS DIM  
+USING  (SELECT  IterationSprintStartDate, IterationSprintEndDate, IterationSprintSK, IterationSprintPath, IsSprintEnded,   
+    IdProject, IterationSprintName  
+  FROM (  
+  SELECT  COALESCE(DATE1.DateKey, -1) AS IterationSprintStartDate,  
+  COALESCE(DATE2.DateKey, -1) AS IterationSprintEndDate,  
+  IterationSK AS IterationSprintSK,   
+  IterationName AS IterationSprintName,   
+  IterationPath AS IterationSprintPath,   
+  IsEnded AS IsSprintEnded,   
+  COALESCE(PROJ.IDPROJECT, -1) AS IdProject  
+  from  DimIterationSprintTemp TMP  
+  LEFT JOIN [dbo].[DimProject] PROJ ON TMP.ProjectSK = PROJ.ProjectSK  
+  LEFT JOIN DimDate DATE1 ON Convert(INT, CONVERT(varchar(10),TMP.StartDate, 112)) = DATE1.DateKey  
+  LEFT JOIN DimDate DATE2 ON Convert(INT, CONVERT(varchar(10), DATEADD(day, -1, TMP.EndDate), 112)) = DATE2.DateKey  
+  GROUP BY IterationSK, DATE2.DateKey, DATE1.DateKey, IterationName,   
+  IterationPath, IsEnded, IdProject)    
+  DimIterationSprintTemp  
+  ) AS SOURCE  
+ ON (SOURCE.IterationSprintSK = DIM.IterationSprintSK)  
+WHEN MATCHED AND DIM.IterationSprintStartDate <> SOURCE.IterationSprintStartDate or DIM.IterationSprintEndDate <> SOURCE.IterationSprintEndDate  
+    or DIM.IterationSprintPath <> SOURCE.IterationSprintPath or DIM.IsSprintEnded <> SOURCE.IsSprintEnded   
+    or DIM.IdProject <> SOURCE.IdProject or DIM.IterationSprintName <> SOURCE.IterationSprintName  
+ THEN UPDATE SET DIM.IterationSprintStartDate = SOURCE.IterationSprintStartDate, DIM.IterationSprintEndDate = SOURCE.IterationSprintEndDate  
+   , DIM.IterationSprintPath = SOURCE.IterationSprintPath, DIM.IsSprintEnded = SOURCE.IsSprintEnded   
+   , DIM.IdProject = SOURCE.IdProject, DIM.IterationSprintName = SOURCE.IterationSprintName  
+WHEN NOT MATCHED   
+ THEN INSERT (IterationSprintStartDate, IterationSprintEndDate, IterationSprintSK, IterationSprintPath, IsSprintEnded,   
+    IdProject, IterationSprintName)   
+ VALUES (SOURCE.IterationSprintStartDate, SOURCE.IterationSprintEndDate, SOURCE.IterationSprintSK,   
+   SOURCE.IterationSprintPath, SOURCE.IsSprintEnded, SOURCE.IdProject, SOURCE.IterationSprintName);
+"""
+
+# COMMAND ----------
+
+driver_manager = spark._sc._gateway.jvm.java.sql.DriverManager
+connection = driver_manager.getConnection(url, user, password)
+connection.prepareCall(script).execute()
+connection.close()
+
+# COMMAND ----------
+
+end_time = datetime.now()
+duracao_notebook = str((end_time - start_time)).split('.')[0]
+print(f'Tempo de execução do notebook: {duracao_notebook}')
+
+# COMMAND ----------
+
+update_log(sourceFile, 'STANDARDIZED', 'CONSUME', duracao_notebook, df.count(), 3)
 
 # COMMAND ----------
 

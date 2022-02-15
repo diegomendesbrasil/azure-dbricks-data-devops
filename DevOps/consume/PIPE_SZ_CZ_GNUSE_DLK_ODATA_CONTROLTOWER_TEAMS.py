@@ -4,6 +4,10 @@
 from pyspark.sql.functions import *
 from pyspark.sql.types import *
 from datetime import datetime
+import pandas as pd
+
+# Hora de início do processamento do notebook
+start_time = datetime.now()
 
 # COMMAND ----------
 
@@ -71,6 +75,60 @@ DimTeamTemp.write\
     .option("user", user)\
     .option("password", password)\
     .save()
+
+# COMMAND ----------
+
+script = """
+MERGE [dbo].[DimTeam] AS DIM  
+USING  (SELECT S.TeamSK,   
+  CASE  
+   WHEN S.TeamName = 'GRC-Business Controls' THEN 'GRC-Business Control'  
+   WHEN S.TeamName = 'GRC-IT Controls' THEN 'GRC-IT Control'  
+   WHEN S.TeamName = 'GRC-UAM Access Mapping' THEN 'GRC-UAM.Access Mapping'  
+   WHEN S.TeamName = 'GRC-UAM SAP Security' THEN 'GRC-UAM.Sap Security'  
+   WHEN S.TeamName = 'OTC-Finance' THEN 'OTC-Finance.Assets Lending'  
+   WHEN S.TeamName = 'OTC-Sales' THEN 'OTC-Sales Order.Billing'  
+   WHEN S.TeamName = 'PCT - Test 1' THEN 'Product Cycle Test-Test 1'  
+   WHEN S.TeamName = 'TAX-SAP' THEN 'TAX-Tax SAP'  
+   WHEN S.TeamName = 'TAX-Taxweb' THEN 'TAX-Tax Web'  
+   WHEN S.TeamName = 'Archived-LOG-Charge Management' THEN 'LOG-Charge Management'  
+   WHEN S.TeamName = 'Archived-LOG-Empties' THEN 'LOG-Empties'  
+   WHEN S.TeamName = 'Archived-LOG-Maintenance' THEN 'LOG-Maintenance'  
+   WHEN S.TeamName = 'Archived-LOG-Planning DP.SNP' THEN 'LOG-Planning DP.SNP'  
+   WHEN S.TeamName = 'Archived-LOG-Planning MRP' THEN 'LOG-Planning MRP'  
+   WHEN S.TeamName = 'Archived-LOG-Quality' THEN 'LOG-Quality'  
+   WHEN S.TeamName = 'Archived-LOG-Transportation T2' THEN 'LOG-Transportation T2'  
+   WHEN S.TeamName = 'Archived-LOG-WM T1' THEN 'LOG-WM T1'  
+  ELSE S.TeamName  
+  END TeamName  
+  FROM  
+   (SELECT TeamSK, REPLACE(TeamName, ' - ', '-') as TeamName  
+    FROM DimTeamTemp WHERE TeamName IS NOT NULL GROUP BY TeamName, TeamSK) AS S)   
+  AS SOURCE  
+  ON (SOURCE.TeamSK = DIM.TeamSK)  
+WHEN MATCHED AND DIM.TeamName <> SOURCE.TeamName  
+ THEN UPDATE SET DIM.TeamName = SOURCE.TeamName   
+WHEN NOT MATCHED   
+ THEN INSERT (TeamSK, TeamName)   
+ VALUES (SOURCE.TeamSK,SOURCE.TeamName);
+"""
+
+# COMMAND ----------
+
+driver_manager = spark._sc._gateway.jvm.java.sql.DriverManager
+connection = driver_manager.getConnection(url, user, password)
+connection.prepareCall(script).execute()
+connection.close()
+
+# COMMAND ----------
+
+end_time = datetime.now()
+duracao_notebook = str((end_time - start_time)).split('.')[0]
+print(f'Tempo de execução do notebook: {duracao_notebook}')
+
+# COMMAND ----------
+
+update_log(sourceFile, 'STANDARDIZED', 'CONSUME', duracao_notebook, df.count(), 3)
 
 # COMMAND ----------
 

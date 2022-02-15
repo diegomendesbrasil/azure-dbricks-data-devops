@@ -1,7 +1,13 @@
 # Databricks notebook source
+# Importanto bibliotecas
+
 from pyspark.sql.functions import *
 from pyspark.sql.types import *
 from datetime import datetime
+import pandas as pd
+
+# Hora de início do processamento do notebook
+start_time = datetime.now()
 
 # COMMAND ----------
 
@@ -37,33 +43,29 @@ df.write.mode('overwrite').format('parquet').save(sinkPath)
 
 # COMMAND ----------
 
-# MAGIC %md
-# MAGIC #### Gravação no Banco de Dados para atividade de contigência
-# MAGIC 1. Busca dados gravados na consume zone
-# MAGIC 2. Cria um DataFrame com esses dados
-# MAGIC 3. Grava os dados na primeira tabela do processo de carga de workItems
-
-# COMMAND ----------
-
-host_name = dbutils.secrets.get(scope = "key-vault-secrets", key = "SqlGto001HostName")
-port = 1433
-database = dbutils.secrets.get(scope = "key-vault-secrets", key = "SqlGto001DatabaseName")
-user = dbutils.secrets.get(scope = "key-vault-secrets", key = "SqlGto001UserName")
-password = dbutils.secrets.get(scope = "key-vault-secrets", key = "SqlGto001DBPass")
-
-# COMMAND ----------
-
 DimProcesses = spark.read.parquet(sinkPath)
 
 # COMMAND ----------
 
-urlgrava = f'jdbc:sqlserver://{host_name}:{port};databaseName={database}'
-
 DimProcesses.write\
     .format("jdbc")\
     .mode("overwrite")\
-    .option("url", urlgrava)\
+    .option("url", url)\
     .option("dbtable", "dbo.DimProcesses")\
     .option("user", user)\
     .option("password", password)\
     .save()
+
+# COMMAND ----------
+
+end_time = datetime.now()
+duracao_notebook = str((end_time - start_time)).split('.')[0]
+print(f'Tempo de execução do notebook: {duracao_notebook}')
+
+# COMMAND ----------
+
+update_log(sourceFile, 'STANDARDIZED', 'CONSUME', duracao_notebook, df.count(), 3)
+
+# COMMAND ----------
+
+# Fim carga Consume Processes

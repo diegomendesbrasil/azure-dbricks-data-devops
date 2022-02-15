@@ -4,6 +4,7 @@
 from pyspark.sql.functions import *
 from pyspark.sql.types import *
 from datetime import datetime
+import pandas as pd
 
 # Hora de início do processamento do notebook
 start_time = datetime.now()
@@ -100,6 +101,10 @@ df.write.mode('overwrite').format('parquet').save(sinkPath)
 end_time = datetime.now()
 duracao_notebook = str((end_time - start_time)).split('.')[0]
 print(f'Tempo de execução do notebook: {duracao_notebook}')
+
+# COMMAND ----------
+
+update_log(sourceFile, 'RAW', 'STANDARDIZED', duracao_notebook, df.count(), 2)
 
 # COMMAND ----------
 
