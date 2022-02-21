@@ -88,8 +88,4 @@ DimWorkItem.write\
 
 # COMMAND ----------
 
-df.count()
-
-# COMMAND ----------
-
 # Fim carga Consume WorkItems

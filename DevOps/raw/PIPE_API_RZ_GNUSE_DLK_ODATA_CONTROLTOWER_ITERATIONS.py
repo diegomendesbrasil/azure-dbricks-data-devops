@@ -78,8 +78,4 @@ print(f'Tempo de execução do notebook: {duracao_notebook}')
 
 # COMMAND ----------
 
-update_log(sourceFile, 'API', 'RAW', duracao_notebook, df.count(), 1)
-
-# COMMAND ----------
-
 # Fim carga Raw Iterations

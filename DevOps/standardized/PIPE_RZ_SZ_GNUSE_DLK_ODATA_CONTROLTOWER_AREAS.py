@@ -104,8 +104,4 @@ print(f'Tempo de execução do notebook: {duracao_notebook}')
 
 # COMMAND ----------
 
-update_log(sourceFile, 'RAW', 'STANDARDIZED', duracao_notebook, df.count(), 2)
-
-# COMMAND ----------
-
 # Fim carga Stand Areas

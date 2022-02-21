@@ -131,8 +131,4 @@ print(f'Tempo de execução do notebook: {duracao_notebook}')
 
 # COMMAND ----------
 
-update_log(sourceFile, 'STANDARDIZED', 'CONSUME', duracao_notebook, df.count(), 3)
-
-# COMMAND ----------
-
 # Fim carga Consume WorkItemLinks

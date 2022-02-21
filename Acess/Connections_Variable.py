@@ -200,6 +200,8 @@ def UpdateDataLoad(hora_atualizacao, subject_area, table_name, zone_name):
 
 # COMMAND ----------
 
+# NÃO ESTÁ SENDO UTILIZADA
+
 def update_log(assunto, origem, destino, tempo, qtd_linhas, ordem):
   
   colunas = ['Assunto', 'Origem', 'Destino', 'Tempo', 'Linhas', 'Ordem', 'DataCarregamento']
