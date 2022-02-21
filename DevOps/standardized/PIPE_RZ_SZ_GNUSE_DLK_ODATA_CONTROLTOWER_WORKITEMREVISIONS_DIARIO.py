@@ -76,7 +76,7 @@ print(f'Número de linhas no df full: {num_linhas_full}')
 
 # COMMAND ----------
 
-# Lê o arquivo parquet do path (carga full) e salva em um spark dataframe
+# Lê o arquivo parquet do path (carga diario) e salva em um spark dataframe
 
 df_diario = spark.read.format('avro').load(sourcePath_diario)
 

@@ -53,6 +53,10 @@ df = spark.read.parquet(sourcePath)
 
 # COMMAND ----------
 
+df.count()
+
+# COMMAND ----------
+
 # Salva a tabela em modo parquet no caminho especificado
 
 df.write.mode('overwrite').format('parquet').save(sinkPath)

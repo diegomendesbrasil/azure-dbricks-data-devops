@@ -44,14 +44,14 @@ sourceFile = 'WorkItems'
 
 # Cria string contendo a data de hoje e a usa como filtro na coluna ChangedDate
 
-hoje = datetime.now().strftime("%Y-%m-%d")# EXEMPLO DE COMO PEGAR O 'HOJE'
+#hoje = datetime.now().strftime("%Y-%m-%d") EXEMPLO DE COMO PEGAR O 'HOJE'
 reprocessamento = ''
-#ontem = (datetime.now() - timedelta(1)).strftime("%Y-%m-%d") 
+ontem = (datetime.now() - timedelta(1)).strftime("%Y-%m-%d") 
 
 if reprocessamento != '':
   data_corte = reprocessamento
 else:
-  data_corte = hoje
+  data_corte = ontem
 
 print(f'A data a ser utilizada no filtro é: {data_corte}')
 
