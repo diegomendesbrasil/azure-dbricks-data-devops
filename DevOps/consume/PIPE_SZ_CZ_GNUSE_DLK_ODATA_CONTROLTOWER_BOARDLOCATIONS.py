@@ -61,17 +61,17 @@ df.write.mode('overwrite').format('parquet').save(sinkPath)
 
 # Lê o arquivo em um novo Dataframe
 
-DimBoardLocationsTemp = spark.read.parquet(sinkPath)
+stgBoardLocations = spark.read.parquet(sinkPath)
 
 # COMMAND ----------
 
 # Escreve o Dataframe no banco de dados
 
-#DimBoardLocationsTemp.write\
+#stgBoardLocations.write\
     #.format("jdbc")\
     #.mode("overwrite")\
     #.option("url", url)\
-    #.option("dbtable", "dbo.DimBoardLocationsTemp")\
+    #.option("dbtable", "dbo.stgBoardLocations")\
     #.option("user", user)\
     #.option("password", password)\
     #.save()

@@ -166,6 +166,8 @@ def getDadosDiarioAuroraAPI(source, data_corte):
 
 # COMMAND ----------
 
+# NÃO ESTÁ SENDO UTILIZADA
+
 def UpdateDataLoad(hora_atualizacao, subject_area, table_name, zone_name):
   
   df_ControlDatasetLoad = (spark

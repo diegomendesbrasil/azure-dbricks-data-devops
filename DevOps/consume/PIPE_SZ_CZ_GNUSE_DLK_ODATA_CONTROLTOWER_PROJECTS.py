@@ -62,17 +62,17 @@ df.write.mode('overwrite').format('parquet').save(sinkPath)
 
 # Lê o arquivo em um novo Dataframe
 
-DimProjectTemp = spark.read.parquet(sinkPath)
+stgProject = spark.read.parquet(sinkPath)
 
 # COMMAND ----------
 
 # Escreve o Dataframe no banco de dados
 
-DimProjectTemp.write\
+stgProject.write\
     .format("jdbc")\
     .mode("overwrite")\
     .option("url", url)\
-    .option("dbtable", "dbo.DimProjectTemp")\
+    .option("dbtable", "dbo.stgProject")\
     .option("user", user)\
     .option("password", password)\
     .save()
@@ -81,7 +81,7 @@ DimProjectTemp.write\
 
 script = """
 MERGE [dbo].[DimProject] AS DIM  
-USING  (SELECT ProjectSK, ProjectName FROM DimProjectTemp WHERE ProjectName IS NOT NULL GROUP BY ProjectName, ProjectSK) AS SOURCE  
+USING  (SELECT ProjectSK, ProjectName FROM stgProject WHERE ProjectName IS NOT NULL GROUP BY ProjectName, ProjectSK) AS SOURCE  
  ON (SOURCE.ProjectSK = DIM.ProjectSK)  
 WHEN MATCHED AND DIM.ProjectName <> SOURCE.ProjectName  
  THEN UPDATE SET DIM.ProjectName = SOURCE.ProjectName   

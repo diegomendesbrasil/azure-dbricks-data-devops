@@ -61,17 +61,17 @@ df.write.mode('overwrite').format('parquet').save(sinkPath)
 
 # Lê o arquivo em um novo Dataframe
 
-DimUserTemp = spark.read.parquet(sinkPath)
+stgUsers = spark.read.parquet(sinkPath)
 
 # COMMAND ----------
 
 # Escreve o Dataframe no banco de dados
 
-DimUserTemp.write\
+stgUsers.write\
     .format("jdbc")\
     .mode("overwrite")\
     .option("url", url)\
-    .option("dbtable", "dbo.DimUserTemp")\
+    .option("dbtable", "dbo.stgUsers")\
     .option("user", user)\
     .option("password", password)\
     .save()
@@ -81,7 +81,7 @@ DimUserTemp.write\
 script = """
 MERGE [dbo].[DimUser] AS DIM  
 USING  (SELECT UserSK, UserName, UserEmail  
-  FROM DimUserTemp   
+  FROM stgUsers   
   WHERE UserName IS NOT NULL   
   GROUP BY UserSK, UserName, UserEmail) AS SOURCE  
  ON (SOURCE.UserSK = DIM.UserSK)  

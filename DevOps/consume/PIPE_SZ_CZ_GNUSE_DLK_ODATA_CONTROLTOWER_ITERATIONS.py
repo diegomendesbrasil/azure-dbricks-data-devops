@@ -61,17 +61,17 @@ df.write.mode('overwrite').format('parquet').save(sinkPath)
 
 # Lê o arquivo em um novo Dataframe
 
-DimIterationSprintTemp = spark.read.parquet(sinkPath)
+stgIterationSprint = spark.read.parquet(sinkPath)
 
 # COMMAND ----------
 
 # Escreve o Dataframe no banco de dados
 
-DimIterationSprintTemp.write\
+stgIterationSprint.write\
     .format("jdbc")\
     .mode("overwrite")\
     .option("url", url)\
-    .option("dbtable", "dbo.DimIterationSprintTemp")\
+    .option("dbtable", "dbo.stgIterationSprint")\
     .option("user", user)\
     .option("password", password)\
     .save()
@@ -90,13 +90,13 @@ USING  (SELECT  IterationSprintStartDate, IterationSprintEndDate, IterationSprin
   IterationPath AS IterationSprintPath,   
   IsEnded AS IsSprintEnded,   
   COALESCE(PROJ.IDPROJECT, -1) AS IdProject  
-  from  DimIterationSprintTemp TMP  
+  from  stgIterationSprint TMP  
   LEFT JOIN [dbo].[DimProject] PROJ ON TMP.ProjectSK = PROJ.ProjectSK  
   LEFT JOIN DimDate DATE1 ON Convert(INT, CONVERT(varchar(10),TMP.StartDate, 112)) = DATE1.DateKey  
   LEFT JOIN DimDate DATE2 ON Convert(INT, CONVERT(varchar(10), DATEADD(day, -1, TMP.EndDate), 112)) = DATE2.DateKey  
   GROUP BY IterationSK, DATE2.DateKey, DATE1.DateKey, IterationName,   
   IterationPath, IsEnded, IdProject)    
-  DimIterationSprintTemp  
+  stgIterationSprint  
   ) AS SOURCE  
  ON (SOURCE.IterationSprintSK = DIM.IterationSprintSK)  
 WHEN MATCHED AND DIM.IterationSprintStartDate <> SOURCE.IterationSprintStartDate or DIM.IterationSprintEndDate <> SOURCE.IterationSprintEndDate  

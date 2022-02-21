@@ -43,18 +43,20 @@ df.write.mode('overwrite').format('parquet').save(sinkPath)
 
 # COMMAND ----------
 
-DimProcesses = spark.read.parquet(sinkPath)
+stgProcesses = spark.read.parquet(sinkPath)
 
 # COMMAND ----------
 
-DimProcesses.write\
-    .format("jdbc")\
-    .mode("overwrite")\
-    .option("url", url)\
-    .option("dbtable", "dbo.DimProcesses")\
-    .option("user", user)\
-    .option("password", password)\
-    .save()
+# Escreve o Dataframe no banco de dados
+
+#stgProcesses.write\
+    #.format("jdbc")\
+    #.mode("overwrite")\
+    #.option("url", url)\
+    #.option("dbtable", "dbo.stgProcesses")\
+    #.option("user", user)\
+    #.option("password", password)\
+    #.save()
 
 # COMMAND ----------
 

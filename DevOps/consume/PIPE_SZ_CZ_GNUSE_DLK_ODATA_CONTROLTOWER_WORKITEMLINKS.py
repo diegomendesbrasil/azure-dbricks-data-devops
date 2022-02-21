@@ -60,17 +60,17 @@ df.write.mode('overwrite').format('parquet').save(sinkPath)
 
 # Lê o arquivo em um novo Dataframe
 
-DimWorkItemParentTemp = spark.read.parquet(sinkPath)
+stgWorkItemLinks = spark.read.parquet(sinkPath)
 
 # COMMAND ----------
 
 # Escreve o Dataframe no banco de dados
 
-DimWorkItemParentTemp.write\
+stgWorkItemLinks.write\
     .format("jdbc")\
     .mode("overwrite")\
     .option("url", url)\
-    .option("dbtable", "dbo.WorkItemLinks")\
+    .option("dbtable", "dbo.stgWorkItemLinks")\
     .option("user", user)\
     .option("password", password)\
     .save()
@@ -91,7 +91,7 @@ USING  (SELECT  WorkItemParentSourceId, WorkItemParentTargetId,
   COALESCE(PROJ.IDPROJECT, -1) AS IdProject,  
   LinkTypeId as ParentTypeId, LinkTypeReferenceName as ParentTypeReferenceName, LinkTypeName as ParentTypeName  
   , LinkTypeIsAcyclic as ParentTypeIsAcyclic, LinkTypeIsDirectional as ParentTypeIsDirectional  
-  from WorkItemLinks TMP  
+  from stgWorkItemLinks TMP  
   --from DimWorkItemParentTemp TMP  
   LEFT JOIN [dbo].[DimProject] PROJ ON TMP.ProjectSK = PROJ.ProjectSK  
   LEFT JOIN DimDate DATE1 ON Convert(INT, CONVERT(varchar(10),TMP.CreatedDate, 112)) = DATE1.DateKey  
@@ -99,7 +99,7 @@ USING  (SELECT  WorkItemParentSourceId, WorkItemParentTargetId,
   GROUP BY SourceWorkItemId, DATE2.DateKey, DATE1.DateKey, IdProject, Comment, TargetWorkItemId,   
   LinkTypeId, LinkTypeReferenceName, LinkTypeName, LinkTypeIsAcyclic, LinkTypeIsDirectional)    
   --DimWorkItemParentTemp  
-  WorkItemLinks  
+  stgWorkItemLinks  
   ) AS SOURCE  
  ON (SOURCE.WorkItemParentSourceId = DIM.WorkItemParentSourceId and   
   SOURCE.WorkItemParentTargetId = DIM.WorkItemParentTargetId and  

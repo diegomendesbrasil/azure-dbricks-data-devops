@@ -61,17 +61,20 @@ df.write.mode('overwrite').format('parquet').save(sinkPath)
 
 # Lê o arquivo em um novo Dataframe
 
-DimAreasTemp = spark.read.parquet(sinkPath)
+stgAreas = spark.read.parquet(sinkPath)
 
 # COMMAND ----------
 
 # Escreve o Dataframe no banco de dados
 
-DimAreasTemp.write\
+
+# stgAreas
+
+stgAreas.write\
     .format("jdbc")\
     .mode("overwrite")\
     .option("url", url)\
-    .option("dbtable", "dbo.DimAreasTemp")\
+    .option("dbtable", "dbo.stgAreas")\
     .option("user", user)\
     .option("password", password)\
     .save()
@@ -82,7 +85,7 @@ script = """
 MERGE [dbo].[DimWorkstream] AS DIM  
 USING  (SELECT Workstream FROM   
   (SELECT AreaLevel2 AS Workstream   
-  FROM DimAreasTemp  
+  FROM stgAreas  
   WHERE AreaLevel2 IS NOT NULL  
   GROUP BY AreaLevel2  
   ) DimWorkstream) AS SOURCE  
@@ -110,7 +113,7 @@ USING  (SELECT AreaSK, AreaPath, IdTeam, IdProject, IdWorkstream,ScrumTeams  FRO
      COALESCE(PROJ.IDPROJECT, -1) AS IdProject,  
      COALESCE(WORK.IDWORKSTREAM, -1) as IdWorkstream,   
      AreaName as ScrumTeams  
-   FROM DimAreasTemp TMP  
+   FROM stgAreas TMP  
    LEFT JOIN [dbo].[DimTeam] TEAM ON   
    CASE    
     WHEN TMP.AreaLevel3 IS NOT NULL  

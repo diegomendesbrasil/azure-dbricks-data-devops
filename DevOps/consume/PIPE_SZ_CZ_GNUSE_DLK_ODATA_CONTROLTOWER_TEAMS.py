@@ -61,17 +61,17 @@ df.write.mode('overwrite').format('parquet').save(sinkPath)
 
 # Lê o arquivo em um novo Dataframe
 
-DimTeamTemp = spark.read.parquet(sinkPath)
+stgTeam = spark.read.parquet(sinkPath)
 
 # COMMAND ----------
 
 # Escreve o Dataframe no banco de dados
 
-DimTeamTemp.write\
+stgTeam.write\
     .format("jdbc")\
     .mode("overwrite")\
     .option("url", url)\
-    .option("dbtable", "dbo.DimTeamTemp")\
+    .option("dbtable", "dbo.stgTeam")\
     .option("user", user)\
     .option("password", password)\
     .save()
@@ -103,7 +103,7 @@ USING  (SELECT S.TeamSK,
   END TeamName  
   FROM  
    (SELECT TeamSK, REPLACE(TeamName, ' - ', '-') as TeamName  
-    FROM DimTeamTemp WHERE TeamName IS NOT NULL GROUP BY TeamName, TeamSK) AS S)   
+    FROM stgTeam WHERE TeamName IS NOT NULL GROUP BY TeamName, TeamSK) AS S)   
   AS SOURCE  
   ON (SOURCE.TeamSK = DIM.TeamSK)  
 WHEN MATCHED AND DIM.TeamName <> SOURCE.TeamName  
