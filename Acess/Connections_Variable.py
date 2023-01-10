@@ -4,11 +4,11 @@
 # COMMAND ----------
 
 #CONEXÃO COM O BANCO DE DADOS
-host_name = dbutils.secrets.get(scope = "key-vault-secrets", key = "SqlGto001HostName")
+host_name = dbutils.secrets.get(scope = "key-vault-secrets", key = "HostName")
 port = 1433
-database = dbutils.secrets.get(scope = "key-vault-secrets", key = "SqlGto001DatabaseName")
-user = dbutils.secrets.get(scope = "key-vault-secrets", key = "SqlGto001UserName")
-password = dbutils.secrets.get(scope = "key-vault-secrets", key = "SqlGto001DBPass")
+database = dbutils.secrets.get(scope = "key-vault-secrets", key = "Database")
+user = dbutils.secrets.get(scope = "key-vault-secrets", key = "UserName")
+password = dbutils.secrets.get(scope = "key-vault-secrets", key = "Pass")
 
 url = f'jdbc:sqlserver://{host_name}:{port};databaseName={database};user={user};password={password}' 
 
@@ -18,7 +18,7 @@ url = f'jdbc:sqlserver://{host_name}:{port};databaseName={database};user={user};
 
 # COMMAND ----------
 
-PERSONAL_AUTHENTICATION_TOKEN = dbutils.secrets.get(scope = "key-vault-secrets", key = "OdtSrvDevOps")
+PERSONAL_AUTHENTICATION_TOKEN = dbutils.secrets.get(scope = "key-vault-secrets", key = "DevOpsToken")
 
 # COMMAND ----------
 
@@ -26,9 +26,9 @@ PERSONAL_AUTHENTICATION_TOKEN = dbutils.secrets.get(scope = "key-vault-secrets",
 
 # COMMAND ----------
 
-aurora_raw_folder = '/mnt/raw/DevOps/Aurora/'
-aurora_standardized_folder = '/mnt/standardized/DevOps/Aurora/'
-aurora_consume_folder = '/mnt/Consume/DevOps/Aurora/'
+raw_folder = '/mnt/raw/DevOps/DmBData/'
+standardized_folder = '/mnt/standardized/DevOps/DmBData/'
+consume_folder = '/mnt/Consume/DevOps/DmBData/'
 
 # COMMAND ----------
 
@@ -36,11 +36,11 @@ aurora_consume_folder = '/mnt/Consume/DevOps/Aurora/'
 
 # COMMAND ----------
 
-def getDadosAuroraAPI(source, colunas=[]):
+def getDadosDevOpsAPI(source, colunas=[]):
   
   dfOdata = pd.DataFrame([])
   
-  BASE_URL = 'https://analytics.dev.azure.com/ab-inbev/Aurora_Program/_odata/v3.0/'
+  BASE_URL = 'https://analytics.dev.azure.com/{Company}/{Project}/_odata/v3.0/'
 
   EXECUCAO = 0
   EXECUCAOFOR = 0
@@ -52,7 +52,7 @@ def getDadosAuroraAPI(source, colunas=[]):
 
   LASTCONTINUATIONTOKEN = 0
 
-  USERNAME = "ab-inbev"
+  USERNAME = "UserDiego"
   USER_PASS = USERNAME + ":" + PERSONAL_AUTHENTICATION_TOKEN
   B64USERPASS = base64.b64encode(USER_PASS.encode()).decode()
 
@@ -100,11 +100,11 @@ def getDadosAuroraAPI(source, colunas=[]):
 
 # COMMAND ----------
 
-def getDadosDiarioAuroraAPI(source, data_corte):
+def getDadosDiarioDevOpsAPI(source, data_corte):
     
   dfOdata = pd.DataFrame([])
   
-  BASE_URL = 'https://analytics.dev.azure.com/ab-inbev/Aurora_Program/_odata/v3.0/'
+  BASE_URL = 'https://analytics.dev.azure.com/{Company}/{Project}/_odata/v3.0/'
   
   if source == 'WorkItems' or source == 'WorkItemRevisions':
     COLUNA_LOOKUP = 'ChangedDate'
@@ -121,7 +121,7 @@ def getDadosDiarioAuroraAPI(source, data_corte):
 
   LASTCONTINUATIONTOKEN = 0
 
-  USERNAME = "ab-inbev"
+  USERNAME = "UserDiego"
   USER_PASS = USERNAME + ":" + PERSONAL_AUTHENTICATION_TOKEN
   B64USERPASS = base64.b64encode(USER_PASS.encode()).decode()
 
