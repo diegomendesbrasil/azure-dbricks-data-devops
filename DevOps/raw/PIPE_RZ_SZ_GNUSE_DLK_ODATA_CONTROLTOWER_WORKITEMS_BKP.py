@@ -257,13 +257,13 @@ colunas_escolhidas = [
 # COMMAND ----------
 
 #CONTINUATIONTOKEN = 0
-#url_base = 'https://analytics.dev.azure.com/ab-inbev/Aurora_Program/_odata/v3.0/WorkItems?$select='
+#url_base = 'https://analytics.dev.azure.com/dmbData/Projeto_DevOps/_odata/v3.0/WorkItems?$select='
 #query = ','.join(colunas_escolhidas)
 #token = '&$skiptoken=' + str(CONTINUATIONTOKEN)
 #url = url_base + query + token
 #print(url)
 
-#REQUEST_URL = 'https://analytics.dev.azure.com/ab-inbev/Aurora_Program/_odata/v3.0/WorkItems?$select=WorkItemId,TagNames,Title,WorkItemType,AreaSK,IterationSK,State,StateCategory,StateChangeDateSK,Reason,ParentWorkItemId,WorkItemRevisionSK,Revision,CommentCount,Watermark,CreatedByUserSK,CreatedDateSK,InProgressDateSK,ActivatedByUserSK,ActivatedDateSK,AssignedToUserSK,ChangedByUserSK,ChangedDateSK,ClosedByUserSK,ClosedDateSK,Effort,Priority,BacklogPriority,Custom_SolutionType,Custom_IndexProcess,Custom_E2E_Name,Custom_L2,Custom_L3,Custom_TestScenario,Custom_BusinessRolesPersona,Custom_PlannedDate,TargetDate,Custom_Dependency,Custom_Test_Suite_Phase,DueDate,Custom_Environment_Field_TEC,Custom_Product_Field_TEC,Custom_Zone_Field_TEC,Custom_Work_Team,Custom_Name_Of_Environment,Custom_Executed_Today,Custom_FioriApp_System,Custom_TC_Automation_status,Custom_Criticality,Custom_Main_Blocker,Custom_Test_Case_Phase,Custom_Test_Case_ExecutionValidation,Custom_Executed_Today,Custom_RiskorIssuesCategory,Custom_IssuePriority,Custom_Contingency,Custom_EscalationNeeded,Custom_Deadline,Custom_AssociatedProject,Custom_RiskorIssuesEscalationLevel,Custom_DateIdentified,Custom_MDG_Relevant&$skiptoken='+str(CONTINUATIONTOKEN)
+#REQUEST_URL = 'https://analytics.dev.azure.com/dmbData/Projeto_DevOps/_odata/v3.0/WorkItems?$select=WorkItemId,TagNames,Title,WorkItemType,AreaSK,IterationSK,State,StateCategory,StateChangeDateSK,Reason,ParentWorkItemId,WorkItemRevisionSK,Revision,CommentCount,Watermark,CreatedByUserSK,CreatedDateSK,InProgressDateSK,ActivatedByUserSK,ActivatedDateSK,AssignedToUserSK,ChangedByUserSK,ChangedDateSK,ClosedByUserSK,ClosedDateSK,Effort,Priority,BacklogPriority,Custom_SolutionType,Custom_IndexProcess,Custom_E2E_Name,Custom_L2,Custom_L3,Custom_TestScenario,Custom_BusinessRolesPersona,Custom_PlannedDate,TargetDate,Custom_Dependency,Custom_Test_Suite_Phase,DueDate,Custom_Environment_Field_TEC,Custom_Product_Field_TEC,Custom_Zone_Field_TEC,Custom_Work_Team,Custom_Name_Of_Environment,Custom_Executed_Today,Custom_FioriApp_System,Custom_TC_Automation_status,Custom_Criticality,Custom_Main_Blocker,Custom_Test_Case_Phase,Custom_Test_Case_ExecutionValidation,Custom_Executed_Today,Custom_RiskorIssuesCategory,Custom_IssuePriority,Custom_Contingency,Custom_EscalationNeeded,Custom_Deadline,Custom_AssociatedProject,Custom_RiskorIssuesEscalationLevel,Custom_DateIdentified,Custom_MDG_Relevant&$skiptoken='+str(CONTINUATIONTOKEN)
 
 # COMMAND ----------
 
@@ -294,9 +294,9 @@ for line in Lista:
     try:
         hourI = time.strftime("%H:%M:%S", time.gmtime(time.time()))
         EXECUCAO= EXECUCAO +1
-        #REQUEST_URL = 'https://analytics.dev.azure.com/ab-inbev/Aurora_Program/_odata/v3.0/Areas?&$skiptoken='+str(CONTINUATIONTOKEN)
-        #REQUEST_URL = 'https://analytics.dev.azure.com/ab-inbev/Aurora_Program/_odata/v3.0/WorkItems?&$skiptoken='+str(CONTINUATIONTOKEN)
-        REQUEST_URL = 'https://analytics.dev.azure.com/ab-inbev/Aurora_Program/_odata/v3.0/WorkItems?&$filter=ChangedDate ge 2022-01-17&$skiptoken='+str(CONTINUATIONTOKEN)
+        #REQUEST_URL = 'https://analytics.dev.azure.com/dmbData/Projeto_DevOps/_odata/v3.0/Areas?&$skiptoken='+str(CONTINUATIONTOKEN)
+        #REQUEST_URL = 'https://analytics.dev.azure.com/dmbData/Projeto_DevOps/_odata/v3.0/WorkItems?&$skiptoken='+str(CONTINUATIONTOKEN)
+        REQUEST_URL = 'https://analytics.dev.azure.com/dmbData/Projeto_DevOps/_odata/v3.0/WorkItems?&$filter=ChangedDate ge 2022-01-17&$skiptoken='+str(CONTINUATIONTOKEN)
         ADO_RESPONSE = requests.get(REQUEST_URL, headers=HEADERS)
         if ADO_RESPONSE.status_code == 200:
           df = json.loads(ADO_RESPONSE.content)

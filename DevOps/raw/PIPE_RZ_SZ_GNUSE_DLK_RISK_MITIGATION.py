@@ -60,7 +60,7 @@ for line in Lista:
   CONTINUATIONTOKEN = 0
   LASTCONTINUATIONTOKEN = 0
   PERSONAL_AUTHENTICATION_TOKEN = "7dyojugghu2nkgwbbvsaigylr3tvos22bw5k4gq4cyp4tcfw2taa"#"pdojz5ezqbvvnr6acgvpaynayuxa6gd7ctrnzwver52guyolphha"
-  #RESOURCE_PATH = 'ab-inbev/Aurora_Program/_apis/testplan/Plans/'+str(line[0])+'/suites/'+str(line[1])+'?$continuationToken='+str(CONTINUATIONTOKEN)+'&api-version=6.0'
+  #RESOURCE_PATH = 'dmbData/Projeto_DevOps/_apis/testplan/Plans/'+str(line[0])+'/suites/'+str(line[1])+'?$continuationToken='+str(CONTINUATIONTOKEN)+'&api-version=6.0'
   USERNAME = "ab-inbev"
   USER_PASS = USERNAME + ":" + PERSONAL_AUTHENTICATION_TOKEN
   B64USERPASS = base64.b64encode(USER_PASS.encode()).decode()
@@ -76,7 +76,7 @@ for line in Lista:
     try:
         hourI = time.strftime("%H:%M:%S", time.gmtime(time.time()))
         EXECUCAO= EXECUCAO +1
-        REQUEST_URL = 'https://dev.azure.com/ab-inbev/Aurora_Program/_apis/wit/workitems/'+str(line[0])+'?api-version=5.0'
+        REQUEST_URL = 'https://dev.azure.com/dmbData/Projeto_DevOps/_apis/wit/workitems/'+str(line[0])+'?api-version=5.0'
         ADO_RESPONSE = requests.get(REQUEST_URL, headers=HEADERS)
         if ADO_RESPONSE.status_code == 200:
           jsRiskMitigation = json.loads(ADO_RESPONSE.content) 

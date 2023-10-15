@@ -69,7 +69,7 @@ for line in Lista:
     try:
         hourI = time.strftime("%H:%M:%S", time.gmtime(time.time()))
         EXECUCAO= EXECUCAO +1
-        REQUEST_URL = 'https://analytics.dev.azure.com/ab-inbev/Aurora_Program/_odata/v3.0/'+str(line[0])+'?$skiptoken=' + str(CONTINUATIONTOKEN)
+        REQUEST_URL = 'https://analytics.dev.azure.com/dmbData/Projeto_DevOps/_odata/v3.0/'+str(line[0])+'?$skiptoken=' + str(CONTINUATIONTOKEN)
         ADO_RESPONSE = requests.get(REQUEST_URL, headers=HEADERS)
         if ADO_RESPONSE.status_code == 200:
           df = json.loads(ADO_RESPONSE.content) 
@@ -106,7 +106,7 @@ for line in Lista:
   CONTINUATIONTOKEN = 0
   LASTCONTINUATIONTOKEN = 0
   PERSONAL_AUTHENTICATION_TOKEN = dbutils.secrets.get(scope = "key-vault-secrets", key = "OdtSrvDevOps")
-  #RESOURCE_PATH = 'ab-inbev/Aurora_Program/_apis/testplan/Plans/'+str(line[0])+'/suites/'+str(line[1])+'?$continuationToken='+str(CONTINUATIONTOKEN)+'&api-version=6.0'
+  #RESOURCE_PATH = 'dmbData/Projeto_DevOps/_apis/testplan/Plans/'+str(line[0])+'/suites/'+str(line[1])+'?$continuationToken='+str(CONTINUATIONTOKEN)+'&api-version=6.0'
   USERNAME = "ab-inbev"
   USER_PASS = USERNAME + ":" + PERSONAL_AUTHENTICATION_TOKEN
   B64USERPASS = base64.b64encode(USER_PASS.encode()).decode()
@@ -122,7 +122,7 @@ for line in Lista:
     try:
         hourI = time.strftime("%H:%M:%S", time.gmtime(time.time()))
         EXECUCAO= EXECUCAO +1
-        REQUEST_URL = 'https://analytics.dev.azure.com/ab-inbev/Aurora_Program/_odata/v3.0/'+str(line[0])+'?api-version=6.0&continuationToken=' + str(CONTINUATIONTOKEN)
+        REQUEST_URL = 'https://analytics.dev.azure.com/dmbData/Projeto_DevOps/_odata/v3.0/'+str(line[0])+'?api-version=6.0&continuationToken=' + str(CONTINUATIONTOKEN)
         ADO_RESPONSE = requests.get(REQUEST_URL, headers=HEADERS)
         if ADO_RESPONSE.status_code == 200:
           df = json.loads(ADO_RESPONSE.content) 
@@ -151,7 +151,7 @@ print('Tempo de execução {} minutos'.format(((end-start)/60)))
 # COMMAND ----------
 
 PERSONAL_AUTHENTICATION_TOKEN = "7dyojugghu2nkgwbbvsaigylr3tvos22bw5k4gq4cyp4tcfw2taa"
-RESOURCE_PATH = 'ab-inbev/Aurora_Program/_odata/v3.0/WorkItems?api-version=6.0&continuationToken=0'
+RESOURCE_PATH = 'dmbData/Projeto_DevOps/_odata/v3.0/WorkItems?api-version=6.0&continuationToken=0'
 USERNAME = "ab-inbev"
 USER_PASS = USERNAME + ":" + PERSONAL_AUTHENTICATION_TOKEN
 B64USERPASS = base64.b64encode(USER_PASS.encode()).decode()
@@ -173,7 +173,7 @@ except requests.exceptions.HTTPError as err:
 # COMMAND ----------
 
 PERSONAL_AUTHENTICATION_TOKEN = "7dyojugghu2nkgwbbvsaigylr3tvos22bw5k4gq4cyp4tcfw2taa"
-RESOURCE_PATH = 'ab-inbev/Aurora_Program/_odata/v3.0/WorkItems?api-version=6.0&continuationToken=0'
+RESOURCE_PATH = 'dmbData/Projeto_DevOps/_odata/v3.0/WorkItems?api-version=6.0&continuationToken=0'
 USERNAME = "ab-inbev"
 USER_PASS = USERNAME + ":" + PERSONAL_AUTHENTICATION_TOKEN
 B64USERPASS = base64.b64encode(USER_PASS.encode()).decode()

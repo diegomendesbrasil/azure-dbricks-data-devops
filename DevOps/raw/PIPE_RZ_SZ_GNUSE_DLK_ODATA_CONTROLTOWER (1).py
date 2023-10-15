@@ -79,8 +79,8 @@ for line in Lista:
     try:
         hourI = time.strftime("%H:%M:%S", time.gmtime(time.time()))
         EXECUCAO= EXECUCAO +1
-        REQUEST_URL = 'https://analytics.dev.azure.com/ab-inbev/Aurora_Program/_odata/v3.0/WorkItems?&$skiptoken='+str(CONTINUATIONTOKEN)
-        #REQUEST_URL = 'https://analytics.dev.azure.com/ab-inbev/Aurora_Program/_odata/v3.0/WorkItems?&$filter=ChangedDate ge 2022-01-10&$skiptoken='+str(CONTINUATIONTOKEN)
+        REQUEST_URL = 'https://analytics.dev.azure.com/dmbData/Projeto_DevOps/_odata/v3.0/WorkItems?&$skiptoken='+str(CONTINUATIONTOKEN)
+        #REQUEST_URL = 'https://analytics.dev.azure.com/dmbData/Projeto_DevOps/_odata/v3.0/WorkItems?&$filter=ChangedDate ge 2022-01-10&$skiptoken='+str(CONTINUATIONTOKEN)
         ADO_RESPONSE = requests.get(REQUEST_URL, headers=HEADERS)
         if ADO_RESPONSE.status_code == 200:
           df = json.loads(ADO_RESPONSE.content) 
