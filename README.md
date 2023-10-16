@@ -55,9 +55,9 @@ The project is configured to run hourly in Azure Data Factory. With each executi
 - For detailed information on the Azure DevOps APIs used in this project, please refer to the official Microsoft documentation: [Azure DevOps APIs Documentation](https://learn.microsoft.com/en-us/rest/api/azure/devops)
 
 
-## Archictecture
+## Architechture
 
-img\arquitetura_devops.png
+![Reference](img/arquitetura_devops.png)
 
 ## Contact
 
